@@ -143,6 +143,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <Text Include="..\..\..\Desktop\programming-homework-master\StudentManagementSystem\stu1.txt" />
+    <Text Include="..\..\..\Desktop\programming-homework-master\StudentManagementSystem\stu2.txt" />
     <Text Include="..\..\..\Desktop\programming-homework-master\StudentManagementSystem\studentInfo.txt" />
     <Text Include="Test.txt" />
   </ItemGroup>

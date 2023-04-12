@@ -37,5 +37,11 @@
     <Text Include="..\..\..\Desktop\programming-homework-master\StudentManagementSystem\studentInfo.txt">
       <Filter>源文件</Filter>
     </Text>
+    <Text Include="..\..\..\Desktop\programming-homework-master\StudentManagementSystem\stu1.txt">
+      <Filter>源文件</Filter>
+    </Text>
+    <Text Include="..\..\..\Desktop\programming-homework-master\StudentManagementSystem\stu2.txt">
+      <Filter>源文件</Filter>
+    </Text>
   </ItemGroup>
 </Project>

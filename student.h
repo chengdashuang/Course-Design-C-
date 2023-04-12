@@ -29,14 +29,13 @@ typedef struct Node {
 
 //创造结点
 node* CreateNode();
-
 //欢迎界面
-void welcome();
+void Welcome();
 
 //成绩信息录入功能
 void Input(node* head);
 //读取文件
-int readFile(node* head);
+int ReadFile(node* head);
 //键盘单个录入
 int Add(node* head);
 
@@ -46,32 +45,28 @@ void SearchStu(node* head);
 //按学号进行查找 
 node* SearchStuInfoById(int id, node* head);
 //按姓名进行查找 
-node* SearcgStyInfoByName(char name[], node* head);
+node* SearchStuInfoByName(char name[], node* head);
 
 
 
 //删除学生信息
-void delete(node* head);
+void Delete(node* head);
 void PrintDeleteStuInfo(node* head);
 
 
 //修改学生信息
-void modify(node* head);
-
+void Modify(node* head);
 //输出学生信息	
-void displayall(node* head);
-
+void DisplayAll(node* head);
 
 
 //统计分类功能
-
 //排序方法
-bool cmpByC(node a, node b);
-bool cmpByMath(node a, node b);
-bool cmpByEng(node a, node b);
-bool cmpBysum(node a, node b);
-
-//冒泡排序
+bool CmpByC(node a, node b);
+bool CmpByMath(node a, node b);
+bool CmpByEng(node a, node b);
+bool CmpBysum(node a, node b);
+//排序
 void SortByC(node* head);
 void SortByMath(node* head);
 void SortByEng(node* head);
@@ -80,8 +75,6 @@ void DisplayByclassify(node* head, int choice);
 
 //分类打印
 void ClassifyPrint(node* head);
-
-
 
 
 //保存文件

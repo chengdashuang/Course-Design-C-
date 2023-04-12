@@ -17,32 +17,39 @@ int main()
 	node* head = CreateNode();
 
 	int choice = 0;
+
 	while (true) {
 
-		welcome();
+		if (choice <= 6 && choice >= 0)
+		{
+			Welcome();
+		}
 		scanf("%d", &choice);
 		switch (choice) {
 		case 1://增加学生信息 
 			Input(head);
 			break;
-		case 2://删除学生信息
-			PrintDeleteStuInfo(head);
+		case 2://输出学生信息
+			DisplayAll(head);
 			break;
-		case 3://修改学生信息 
-			modify(head);
-			break;
-		case 4://查询学生信息
+		case 3://查询学生信息
 			SearchStu(head);
 			break;
-		case 5://输出学生信息
-			displayall(head);
-			break;
-		case 6:
+		case 4://分类统计信息
 			ClassifyPrint(head);
+			break;
+		case 5://删除学生信息
+			PrintDeleteStuInfo(head);
+			break;
+		case 6://修改学生信息 
+			Modify(head);
 			break;
 		case 0://退出程序 
 			GoodBye();
 			break;
+		default:
+			printf("输入有误，请重新输入：");
+			continue;
 		}
 		printf("是否需要继续操作？(yes:1 / no:0 )：");
 		scanf("%d", &choice);

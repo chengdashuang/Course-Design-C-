@@ -1,21 +1,18 @@
 #include "student.h"
-
-
-
 //成绩信息录入功能: 可从磁盘文件导入学生成绩的信息，也可以单个录入。
-void welcome() {
+void Welcome() {
 	system("cls");
 	printf("************************\n");
 	printf("**  学生成绩管理系统  **\n");
 	printf("**      作者：程大双  **\n");
 	printf("**                    **\n");
-	printf("**  增加学生信息 ---1 **\n");
-	printf("**  删除学生信息 ---2 **\n");
-	printf("**  修改学生信息 ---3 **\n");
-	printf("**  查询学生信息 ---4 **\n");
-	printf("**  输出学生信息 ---5 **\n");
-	printf("**  分类统计信息 ---6 **\n");
-	printf("**  退出管理系统 ---0 **\n");
+	printf("**  增加学生信息---1  **\n");
+	printf("**  输出学生信息---2  **\n");
+	printf("**  查询学生信息---3  **\n");
+	printf("**  分类统计信息---4  **\n");
+	printf("**  删除学生信息---5  **\n");
+	printf("**  修改学生信息---6  **\n");
+	printf("**  退出管理系统---0  **\n");
 
 	printf("请输入对应的功能键（数字）: ");
 }
@@ -33,9 +30,9 @@ node* CreateNode()
 	return n;
 }
 //读取文件
-int readFile(node* head)
+int ReadFile(node* head)
 {
-	FILE* fpr = fopen("C:\\Users\\Cds\\Desktop\\programming-homework-master\\StudentManagementSystem\\studentInfo.txt", "r");
+	FILE* fpr = fopen("C:\\Users\\Cds\\Desktop\\programming-homework-master\\StudentManagementSystem\\stu1.txt", "r");
 	head->next = CreateNode();
 	node* next = head->next;
 	node* cur = head->next;
@@ -46,21 +43,23 @@ int readFile(node* head)
 		//fcanf()
 
 
-		while ((fscanf(fpr, "%d %s %d %d %d %d", &(next->id), next->name, &(next->C), &(next->Math), &(next->Eng), &(next->sum)) != EOF))
+		while ((fscanf(fpr, "%d %s %d %d %d %d", &(next->id), next->name, &(next->C), &(next->Math), &(next->Eng), &(next->sum)) != EOF) || next->id != 0)
 		{
 			if (next != head)
 				next->next = CreateNode();
 			cur = next;
 			next = next->next;
 		}
+		Delete(head, next);
 
 	}
+
 	fclose(fpr);//关闭文件指针 
 	return 1;
 }
 
 //键盘单个录入
-int add(node* head)
+int Add(node* head)
 {
 
 	head->next = CreateNode();
@@ -82,11 +81,13 @@ int add(node* head)
 		i++;
 	}
 	next->next = NULL;
+
+	SaveFile1(head);
 	return 1;
 }
 
 
-void Input(node** head)
+void Input(node* head)
 {
 	int temp = 0;
 	printf("1.从磁盘文件导入\n");
@@ -97,11 +98,15 @@ void Input(node** head)
 
 	if (temp == 1)
 	{
-		readFile(head);
+		int p = ReadFile(head);
+		if (p == 1)
+			printf("文件信息导入成功!\n");
+		else
+			printf("文件信息导入失败!\n");
 	}
 	if (temp == 2)
 	{
-		add(head);
+		Add(head);
 	}
 
 }
@@ -109,27 +114,45 @@ void Input(node** head)
 
 void PrintDeleteStuInfo(node* head) {
 	system("cls");
-	int id;
-	printf("请输入要删除的学生学号:");
-	scanf("%d", &id);
-	node* st = SearchStuInfoById(id, head);
+	int id, choice;
+	char name[40];
+	printf("按学号查询----- 1\n");
+	printf("按姓名查询----- 2\n");
+	printf("请输入查询方式：");
+	node* st;
+	scanf("%d", &choice);
+	if (choice == 1)
+	{
+		printf("请输入要删除的学生学号:");
+		scanf("%d", &id);
+		st = SearchStuInfoById(id, head);
 
-	if (st == NULL) {
-		printf("查无此人！");
+
+	}
+	if (choice == 2)
+	{
+		printf("请输入要删除的学生姓名：");
+		scanf("%s", name);
+		st = SearchStuInfoByName(name, head);
+
+
+	}
+	if (st == NULL)
+	{
+		printf("查无此人,删除失败！");
 		return;
 	}
-
 	printf("________________________________________________________\n");
 	printf("|学号\t|姓名\t|C\t|数学\t|英语\t|总分\t|\n");
 	printf("________________________________________________________\n");
-	printf("|%d|%s\t|%d\t|%d\t|%d\t|%d\t|\n", st->id, st->name, st->C, st->Math, st->Eng, st->sum);
+	printf("|%d\t|%s\t|%d\t|%d\t|%d\t|%d\t|\n", st->id, st->name, st->C, st->Math, st->Eng, st->sum);
 	printf("________________________________________________________\n");
 
-	delete(head, st);
-	saveFile(head);
+	Delete(head, st);
+	SaveFile2(head);
 }
 //删除学生信息
-void delete(node* head, node* del)
+void Delete(node* head, node* del)
 {
 	node* cur = head->next;
 	if (cur == del)
@@ -151,7 +174,6 @@ void delete(node* head, node* del)
 	}
 
 }
-
 //按学号查询
 node* SearchStuInfoById(int id, node* head)
 {
@@ -187,7 +209,7 @@ node* SearchStuInfoByName(char name[], node* head)
 
 
 //查询学生信息
-void SearchStu(node* L)
+void SearchStu(node* head)
 {
 	system("cls");
 	int choice = 0;
@@ -203,7 +225,7 @@ void SearchStu(node* L)
 	if (choice == 1) {
 		printf("请输入要查询的学号：");
 		scanf("%d", &id);
-		st = SearchStuInfoById(id, L);
+		st = SearchStuInfoById(id, head);
 
 		if (st == NULL) {
 			printf("查无此人！\n");
@@ -213,7 +235,7 @@ void SearchStu(node* L)
 			printf("________________________________________________________\n");
 			printf("|学号\t|姓名\t|C语言\t|数学\t|英语\t|总分\t|\n");
 			printf("________________________________________________________\n");
-			printf("%d\t|%s\t|%d\t|%d\t|%d\t|%d\t|\n", st->id, st->name, st->C, st->Math, st->Eng, st->sum);
+			printf("|%d\t|%s\t|%d\t|%d\t|%d\t|%d\t|\n", st->id, st->name, st->C, st->Math, st->Eng, st->sum);
 			printf("________________________________________________________\n");
 		}
 	}
@@ -222,7 +244,7 @@ void SearchStu(node* L)
 	else if (choice == 2) {
 		printf("请输入要查询的姓名：");
 		scanf("%s", name);
-		st = SearchStuInfoByName(name, L);
+		st = SearchStuInfoByName(name, head);
 
 		if (st == NULL) {
 			printf("查无此人！\n");
@@ -231,7 +253,7 @@ void SearchStu(node* L)
 			printf("________________________________________________________\n");
 			printf("|学号\t|姓名\t|C语言\t|数学\t|英语\t|总分\t|\n");
 			printf("________________________________________________________\n");
-			printf("%d\t|%s\t|%d\t|%d\t|%d\t|%d\t|\n", st->id, st->name, st->C, st->Math, st->Eng, st->sum);
+			printf("|%d\t|%s\t|%d\t|%d\t|%d\t|%d\t|\n", st->id, st->name, st->C, st->Math, st->Eng, st->sum);
 			printf("________________________________________________________\n");
 		}
 	}
@@ -239,20 +261,36 @@ void SearchStu(node* L)
 }
 
 //信息修改
-void modify(node* head)
+void Modify(node* head)
 {
 	system("cls");
 
 
 	int id;
+	char name[20];
 	int choice = -1;
+	int ch = 0;
+	printf("按学号查询----- 1\n");
+	printf("按姓名查询----- 2\n");
+	printf("请输入查询方式：");
+	scanf("%d", &ch);
+	node* st;
+	if (ch == 1)
+	{
+		printf("请输入要修改的学生学号:");
+		scanf("%d", &id);
+		st = SearchStuInfoById(id, head);
 
-	printf("请输入要查找的学生学号");
-	scanf("%d", &id);
-	node* st = SearchStuInfoById(id, head);
+	}
 
+	else
+	{
+		printf("请输入要修改的学生姓名:");
+		scanf("%s", name);
+		st = SearchStuInfoByName(name, head);
+	}
 	if (st == NULL) {
-		printf("查无此人！");
+		printf("查无此人，修改失败！\n");
 		return;
 	}
 	while (1) {
@@ -260,7 +298,7 @@ void modify(node* head)
 		printf("________________________________________________________\n");
 		printf("|学号\t|姓名\t|C\t|数学\t|英语\t|总分\t|\n");
 		printf("________________________________________________________\n");
-		printf("%d\t|%s\t|%d\t|%d\t|%d\t|%d\t|\n", st->id, st->name, st->C, st->Math, st->Eng, st->sum);
+		printf("|%d\t|%s\t|%d\t|%d\t|%d\t|%d\t|\n", st->id, st->name, st->C, st->Math, st->Eng, st->sum);
 		printf("________________________________________________________\n");
 		printf("修改姓名---- 1\n");
 		printf("修改C   ---- 2\n");
@@ -301,19 +339,16 @@ void modify(node* head)
 	printf("________________________________________________________\n");
 	printf("|学号\t|姓名\t|C\t|数学\t|英语\t|总分\t|\n");
 	printf("________________________________________________________\n");
-	printf("%d\t|%s\t|%d\t|%d\t|%d\t|%d\t|\n", st->id, st->name, st->C, st->Math, st->Eng, st->sum);
+	printf("|%d\t|%s\t|%d\t|%d\t|%d\t|%d\t|\n", st->id, st->name, st->C, st->Math, st->Eng, st->sum);
 	printf("________________________________________________________\n");
 
-	saveFile(head);
+	SaveFile2(head);
 }
 
-
 //输出所有学生的所有信息
-void displayall(node* head)
+void DisplayAll(node* head)
 {
 	system("cls");
-	//FILE* fpr = fopen("C:\\Users\\Cds\\Desktop\\programming-homework-master\\StudentManagementSystem\\studentInfo.txt", "w");
-
 	node* next = head->next;
 	printf("________________________________________________________\n");
 	printf("|学号\t|姓名\t|C\t|数学\t|英语\t|总分\t|\n");
@@ -321,9 +356,8 @@ void displayall(node* head)
 
 	while (next != NULL)
 	{
-		printf("%d\t|%s\t|%d\t|%d\t|%d\t|%d\t|\n", next->id, next->name, next->C, next->Math, next->Eng, next->sum);
+		printf("|%d\t|%s\t|%d\t|%d\t|%d\t|%d\t|\n", next->id, next->name, next->C, next->Math, next->Eng, next->sum);
 		printf("________________________________________________________\n");
-		//fprintf(fpr, "%d %s  %d %d %d %d\n", next->id, next->name, next->C, next->Math, next->Eng, next->sum);
 		if (next->next != NULL)
 			next = next->next;
 		else
@@ -336,17 +370,17 @@ void displayall(node* head)
 }
 
 //链表的排序规则 是降序排列
-bool cmpByC(node a, node b) {
+bool CmpByC(node a, node b) {
 	return a.C < b.C;
 }
 
-bool cmpByMath(node a, node b) {
+bool CmpByMath(node a, node b) {
 	return a.Math < b.Math;
 }
-bool cmpByEng(node a, node b) {
+bool CmpByEng(node a, node b) {
 	return a.Eng < b.Eng;
 }
-bool cmpBysum(node a, node b) {
+bool CmpBysum(node a, node b) {
 	return a.sum < b.sum;
 }
 //链表的冒泡排序
@@ -355,7 +389,7 @@ void SortByC(node* head)
 	for (node* i = head->next; i != NULL; i = i->next) {
 
 		for (node* j = i; j != NULL; j = j->next) {
-			if (cmpByC(*i, *j) == true) {
+			if (CmpByC(*i, *j) == true) {
 				//交换数据域
 				node temp = *i;
 				*i = *j;
@@ -374,7 +408,7 @@ void SortByMath(node* head)
 	for (node* i = head->next; i != NULL; i = i->next) {
 
 		for (node* j = i; j != NULL; j = j->next) {
-			if (cmpByMath(*i, *j) == true) {
+			if (CmpByMath(*i, *j) == true) {
 				//交换数据域
 				node temp = *i;
 				*i = *j;
@@ -392,7 +426,7 @@ void SortByEng(node* head)
 	for (node* i = head->next; i != NULL; i = i->next) {
 
 		for (node* j = i; j != NULL; j = j->next) {
-			if (cmpByEng(*i, *j) == true) {
+			if (CmpByEng(*i, *j) == true) {
 				//交换数据域
 				node temp = *i;
 				*i = *j;
@@ -411,7 +445,7 @@ void SortBysum(node* head)
 	for (node* i = head->next; i != NULL; i = i->next) {
 
 		for (node* j = i; j != NULL; j = j->next) {
-			if (cmpBysum(*i, *j) == true) {
+			if (CmpBysum(*i, *j) == true) {
 				//交换数据域
 				node temp = *i;
 				*i = *j;
@@ -447,10 +481,24 @@ void DisplayByclassify(node* head, int choice)
 	system("cls");
 	node* next = head->next;
 	char ch;
-	printf("90以上----A\n");
-	printf("80~89-----B\n");
-	printf("60~79-----C\n");
-	printf("0~59------D\n");
+	if (choice != 4)
+	{
+		printf("90以上----A\n");
+		printf("80~89-----B\n");
+		printf("60~79-----C\n");
+		printf("0~59------D\n");
+		printf("0~100-----E\n");
+	}
+	else if (choice == 4)
+	{
+		printf("270以上---A\n");
+		printf("240~270---B\n");
+		printf("180~240---C\n");
+		printf("0~180-----D\n");
+		printf("0~300-----E\n");
+	}
+
+
 	printf("请输入你要查询的分数段:\n");
 	getchar();
 	ch = getchar();
@@ -463,6 +511,10 @@ void DisplayByclassify(node* head, int choice)
 	else if (ch == 'D' && choice != 4)
 		printf("60以下\n");
 
+	if (ch == 'E' && choice != 4)
+		printf("0~100\n");
+	else if (ch == 'E' && choice == 4)
+		printf("0~300\n");
 
 	if (ch == 'A' && choice == 4)
 		printf("270分以上\n");
@@ -476,13 +528,13 @@ void DisplayByclassify(node* head, int choice)
 
 	printf("____________________________\n");
 	if (choice == 1)
-		printf("学号\t|姓名\t|C\t|\n");
+		printf("|学号\t|姓名\t|C\t|\n");
 	else if (choice == 2)
-		printf("学号\t|姓名\t|数学\t|\n");
+		printf("|学号\t|姓名\t|数学\t|\n");
 	else if (choice == 3)
-		printf("学号\t|姓名\t|英语\t|\n");
-	else
-		printf("学号\t|姓名\t|总分\t|\n");
+		printf("|学号\t|姓名\t|英语\t|\n");
+	else if (choice == 4)
+		printf("|学号\t|姓名\t|总分\t|\n");
 	printf("____________________________\n");
 	while (next != NULL && next->id != 0)
 	{
@@ -492,7 +544,7 @@ void DisplayByclassify(node* head, int choice)
 			{
 				if (next->C >= 90)
 				{
-					printf("%d\t|%s\t|%d\t|\n", next->id, next->name, next->C);
+					printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->C);
 					printf("____________________________\n");
 				}
 				if (next->next != NULL)
@@ -507,10 +559,9 @@ void DisplayByclassify(node* head, int choice)
 			{
 				if (next->C >= 80 && next->C < 90)
 				{
-					printf("%d\t|%s\t|%d\t|\n", next->id, next->name, next->C);
+					printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->C);
 					printf("____________________________\n");
 				}
-				;
 				if (next->next != NULL)
 					next = next->next;
 				else
@@ -523,10 +574,9 @@ void DisplayByclassify(node* head, int choice)
 			{
 				if (next->C >= 60 && next->C < 80)
 				{
-					printf("%d\t|%s\t|%d\t|\n", next->id, next->name, next->C);
+					printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->C);
 					printf("____________________________\n");;
 				}
-				;
 				if (next->next != NULL)
 					next = next->next;
 				else
@@ -536,10 +586,21 @@ void DisplayByclassify(node* head, int choice)
 			{
 				if (next->C < 60)
 				{
-					printf("%d\t|%s\t|%d\t|\n", next->id, next->name, next->C);
+					printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->C);
 					printf("____________________________\n");
 				}
-				;
+				if (next->next != NULL)
+					next = next->next;
+				else
+				{
+					break;
+				}
+
+			}
+			else if (ch == 'E')
+			{
+				printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->C);
+				printf("____________________________\n");
 				if (next->next != NULL)
 					next = next->next;
 				else
@@ -555,10 +616,9 @@ void DisplayByclassify(node* head, int choice)
 			{
 				if (next->Math >= 90)
 				{
-					printf("%d\t|%s\t|%d\t|\n", next->id, next->name, next->Math);
+					printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->Math);
 					printf("____________________________\n");
 				}
-				;
 				if (next->next != NULL)
 					next = next->next;
 				else
@@ -571,10 +631,9 @@ void DisplayByclassify(node* head, int choice)
 			{
 				if (next->Math >= 80 && next->Math < 90)
 				{
-					printf("%d\t|%s\t|%d\t|\n", next->id, next->name, next->Math);
+					printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->Math);
 					printf("____________________________\n");
 				}
-				;
 				if (next->next != NULL)
 					next = next->next;
 				else
@@ -587,10 +646,9 @@ void DisplayByclassify(node* head, int choice)
 			{
 				if (next->Math >= 60 && next->Math < 80)
 				{
-					printf("%d\t|%s\t|%d\t|\n", next->id, next->name, next->Math);
+					printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->Math);
 					printf("____________________________\n");
 				}
-				;
 				if (next->next != NULL)
 					next = next->next;
 				else
@@ -604,10 +662,22 @@ void DisplayByclassify(node* head, int choice)
 				if (next->Math < 60)
 				{
 
-					printf("%d\t|%s\t|%d\t|\n", next->id, next->name, next->Math);
+					printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->Math);
 					printf("____________________________\n");
 				}
-				;
+				if (next->next != NULL)
+					next = next->next;
+				else
+				{
+
+					break;
+				}
+
+			}
+			else if (ch == 'E')
+			{
+				printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->Math);
+				printf("____________________________\n");
 				if (next->next != NULL)
 					next = next->next;
 				else
@@ -624,10 +694,9 @@ void DisplayByclassify(node* head, int choice)
 			{
 				if (next->Eng >= 90)
 				{
-					printf("%d\t|%s\t|%d\t|\n", next->id, next->name, next->Eng);
+					printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->Eng);
 					printf("____________________________\n");
 				}
-				;
 				if (next->next != NULL)
 					next = next->next;
 				else
@@ -640,10 +709,9 @@ void DisplayByclassify(node* head, int choice)
 			{
 				if (next->Eng >= 80 && next->Eng < 90)
 				{
-					printf("%d\t|%s\t|%d\t|\n", next->id, next->name, next->Eng);
+					printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->Eng);
 					printf("____________________________\n");
 				}
-				;
 				if (next->next != NULL)
 					next = next->next;
 				else
@@ -657,10 +725,9 @@ void DisplayByclassify(node* head, int choice)
 			{
 				if (next->Eng >= 60 && next->Eng < 80)
 				{
-					printf("%d\t|%s\t|%d\t|\n", next->id, next->name, next->Eng);
+					printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->Eng);
 					printf("____________________________\n");
 				}
-				;
 				if (next->next != NULL)
 					next = next->next;
 				else
@@ -674,10 +741,22 @@ void DisplayByclassify(node* head, int choice)
 			{
 				if (next->Eng < 60)
 				{
-					printf("%d\t|%s\t|%d\t|\n", next->id, next->name, next->Eng);
+					printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->Eng);
 					printf("____________________________\n");
 				}
-				;
+				if (next->next != NULL)
+					next = next->next;
+				else
+				{
+					printf("\n");
+					break;
+				}
+
+			}
+			else if (ch == 'E')
+			{
+				printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->Eng);
+				printf("____________________________\n");
 				if (next->next != NULL)
 					next = next->next;
 				else
@@ -694,10 +773,9 @@ void DisplayByclassify(node* head, int choice)
 			{
 				if (next->sum >= 270)
 				{
-					printf("%d\t|%s\t|%d\t|\n", next->id, next->name, next->sum);
+					printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->sum);
 					printf("____________________________\n");
 				}
-				;
 				if (next->next != NULL)
 					next = next->next;
 				else
@@ -711,10 +789,9 @@ void DisplayByclassify(node* head, int choice)
 			{
 				if (next->sum >= 240 && next->sum < 270)
 				{
-					printf("%d\t|%s\t|%d\t|\n", next->id, next->name, next->sum);
+					printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->sum);
 					printf("____________________________\n");
 				}
-				;
 				if (next->next != NULL)
 					next = next->next;
 				else
@@ -722,16 +799,14 @@ void DisplayByclassify(node* head, int choice)
 					printf("\n");
 					break;
 				}
-
 			}
 			else if (ch == 'C')
 			{
 				if (next->sum >= 180 && next->sum < 250)
 				{
-					printf("%d\t|%s\t|%d\t|\n", next->id, next->name, next->sum);
+					printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->sum);
 					printf("____________________________\n");
 				}
-				;
 				if (next->next != NULL)
 					next = next->next;
 				else
@@ -745,10 +820,22 @@ void DisplayByclassify(node* head, int choice)
 			{
 				if (next->sum < 180)
 				{
-					printf("%d\t|%s\t|%d\t|\n", next->id, next->name, next->sum);
+					printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->sum);
 					printf("____________________________\n");
 				}
-				;
+				if (next->next != NULL)
+					next = next->next;
+				else
+				{
+					printf("\n");
+					break;
+				}
+
+			}
+			else if (ch == 'E')
+			{
+				printf("|%d\t|%s\t|%d\t|\n", next->id, next->name, next->sum);
+				printf("____________________________\n");
 				if (next->next != NULL)
 					next = next->next;
 				else
@@ -803,9 +890,15 @@ void ClassifyPrint(node* head)		//统计分类
 }
 
 //保存文件
-int saveFile(node* head)
+int SaveFile1(node* head)
 {
-	FILE* fpw = fopen("C:\\Users\\Cds\\Desktop\\programming-homework-master\\StudentManagementSystem\\studentInfo.txt", "w");
+	FILE* fpw;
+
+	fpw = fopen("C:\\Users\\Cds\\Desktop\\programming-homework-master\\StudentManagementSystem\\stu1.txt", "a");
+
+
+	//fpw = fopen("C:\\Users\\Cds\\Desktop\\programming-homework-master\\StudentManagementSystem\\stu2.txt", "w");
+
 	if (fpw == NULL) return 0;
 
 	//fprintf(fpw,"xxx",);
@@ -819,7 +912,28 @@ int saveFile(node* head)
 	fclose(fpw);//关闭文件指针
 	return 1;
 }
+int SaveFile2(node* head)
+{
+	FILE* fpw;
 
+	fpw = fopen("C:\\Users\\Cds\\Desktop\\programming-homework-master\\StudentManagementSystem\\stu1.txt", "w");
+
+
+	//fpw = fopen("C:\\Users\\Cds\\Desktop\\programming-homework-master\\StudentManagementSystem\\stu2.txt", "w");
+
+	if (fpw == NULL) return 0;
+
+	//fprintf(fpw,"xxx",);
+	node* next = head->next;
+
+	while (next != NULL) {
+
+		fprintf(fpw, "%d %s %d %d %d %d\n", next->id, next->name, next->C, next->Math, next->Eng, next->sum);
+		next = next->next;
+	}
+	fclose(fpw);//关闭文件指针
+	return 1;
+}
 //退出程序
 void GoodBye()
 {
@@ -827,4 +941,3 @@ void GoodBye()
 	printf("欢迎下次使用~\n");
 	exit(0);//结束程序 
 }
-
